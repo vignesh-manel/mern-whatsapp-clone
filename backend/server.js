@@ -7,7 +7,7 @@ const port = process.env.PORT || 9000
 
 app.use(express.json())
 
-const connection_url = 'mongodb+srv://admin:xA1vF1OievwsDShq@cluster0.fujwv.mongodb.net/whatsappdb?retryWrites=true&w=majority'
+const connection_url = 'mongodb+srv://admin:<password>@cluster0.fujwv.mongodb.net/whatsappdb?retryWrites=true&w=majority'
 
 mongoose.connect(connection_url,{
     useCreateIndex: true,
@@ -16,6 +16,16 @@ mongoose.connect(connection_url,{
 });
 
 app.get('/',(req,res) => res.status(200).send('hello world'))
+
+app.get('/messages/sync', (req, res) => {
+    Messages.find((err, data) => {
+	if (err) {
+	    res.status(500).send(err)
+	} else {
+	    res.status(200).send(data)
+	}
+    })
+})
 
 app.post('/messages/new', (req, res) => {
     const dbMessage = req.body;
