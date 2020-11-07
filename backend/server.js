@@ -2,21 +2,23 @@ const express = require('express')
 const mongoose = require('mongoose')
 const Messages = require('./dbmessages.js')
 const Pusher = require('pusher')
+const cors = require('cors')
 
 const app = express()
 const port = process.env.PORT || 9000
 
 const pusher = new Pusher({
-  appId: "1100262",
-  key: "eee705de17860fccb053",
-  secret: "8e0e3cdb7dc8641299d2",
+  appId: "1100307",
+  key: "5473cf830ec874fb6949",
+  secret: "90693dd78065b2915024",
   cluster: "ap2",
   useTLS: true
 });
 
 app.use(express.json());
+app.use(cors());
 
-const connection_url = 'mongodb+srv://admin:weLehoFQN3NBiGTg@cluster0.fujwv.mongodb.net/whatsappdb?retryWrites=true&w=majority'
+const connection_url = 'mongodb+srv://admin:abc@cluster0.fujwv.mongodb.net/whatsappdb?retryWrites=true&w=majority'
 
 mongoose.connect(connection_url,{
     useCreateIndex: true,
@@ -39,7 +41,9 @@ db.once('open', () => {
 	    pusher.trigger('messages','inserted',
 		{
 		    name: messageDetails.name,
-		    message: messageDetails.message
+		    message: messageDetails.message,
+		    timestamp: messageDetails.timestamp,
+		    received: messageDetails.received
 		}
 	    );
 	} else {
