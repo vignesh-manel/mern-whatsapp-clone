@@ -1,14 +1,43 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import './Sidebar.css';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import ChatIcon from '@material-ui/icons/Chat';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { SearchOutlined } from "@material-ui/icons/";
 import SidebarChat from "./SidebarChat";
+import Pusher from "pusher-js";
+import axios from '../axios';
 
 import { Avatar, IconButton } from "@material-ui/core"
 
 function Sidebar() {
+
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    axios.get('/rooms/sync')
+	.then(response => {
+	  setRooms(response.data)
+    })
+  }, []);
+
+  useEffect(() => {
+    const pusher = new Pusher('5', {
+      cluster: 'ap2'
+    });
+
+    const channel = pusher.subscribe('rooms');
+    channel.bind('inserted', (newRoom) => {
+      setRooms([...rooms, newRoom])
+    });
+
+    return () => {
+	channel.unbind();
+	channel.unsubscribe("rooms");
+    };
+
+  }, [rooms]);
+
     return (
 	<div className="sidebar">
 	    <div className="sidebar_header">
@@ -35,10 +64,9 @@ function Sidebar() {
 
 	    <div className="sidebar_chats">
 		<SidebarChat addNewChat />		
-		<SidebarChat />
-		<SidebarChat />
-		<SidebarChat />
-		<SidebarChat />
+		{rooms.map(room => (
+		    <SidebarChat name={room.name} />
+		))}
 	    </div>
 
 	</div>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./SidebarChat.css";
-import { Avatar } from "@material-ui/core"
+import { Avatar } from "@material-ui/core";
+import axios from '../axios';
 
-function SidebarChat({ addNewChat }) {
+function SidebarChat({ addNewChat, name }) {
     const [seed, setSeed] = useState('')
     
     useEffect(() => {
@@ -10,17 +11,19 @@ function SidebarChat({ addNewChat }) {
     }, []);
 
     const createChat = () => {
-	const roomName = prompt("Please enter name for chat");
+	const roomName = prompt("Please enter name for chat room");
 
 	if (roomName) {
-	    
+	    axios.post('rooms/new', {
+	    name: roomName
+	});	    
 	}
     };
 
     return !addNewChat ? (<div className="sidebarChat">
 		<Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
 		<div className="sidebarChat_info">
-		    <h2>Room Name</h2>
+		    <h2>{name}</h2>
 		    <p>This is the last message</p>
 		</div>
 	   </div>): (

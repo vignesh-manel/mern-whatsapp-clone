@@ -14,14 +14,6 @@ function Chat({messages}) {
 	setSeed(Math.floor(Math.random() * 5000));
     }, []);
 
-    const createChat = () => {
-	const roomName = prompt("Please enter name for chat");
-
-	if (roomName) {
-	    
-	}
-    };
-
     const sendMessage = async (e) => {
 	e.preventDefault();
 
