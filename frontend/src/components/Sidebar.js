@@ -13,6 +13,11 @@ import { Avatar, IconButton } from "@material-ui/core"
 function Sidebar() {
 
   const [rooms, setRooms] = useState([]);
+  const [seed, setSeed] = useState('')
+    
+    useEffect(() => {
+	setSeed(Math.floor(Math.random() * 5000));
+    }, []);
 
   useEffect(() => {
     axios.get('/rooms/sync')
@@ -22,7 +27,7 @@ function Sidebar() {
   }, []);
 
   useEffect(() => {
-    const pusher = new Pusher('5', {
+    const pusher = new Pusher(process.env.REACT_APP_pusherKey, {
       cluster: 'ap2'
     });
 
@@ -38,10 +43,12 @@ function Sidebar() {
 
   }, [rooms]);
 
+   console.log(rooms);
+
     return (
 	<div className="sidebar">
 	    <div className="sidebar_header">
-		<Avatar src="https://avatars2.githubusercontent.com/u/23293306?s=400&u=f300e342a9811de4ffab06416f6d706ddd4c9180&v=4"/>
+		<Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`}/>
 		<div className="sidebar_headerRight">
 		    <IconButton>
 			<DonutLargeIcon />
@@ -65,7 +72,7 @@ function Sidebar() {
 	    <div className="sidebar_chats">
 		<SidebarChat addNewChat />		
 		{rooms.map(room => (
-		    <SidebarChat name={room.name} />
+		    <SidebarChat key={room._id} id={room._id} name={room.name} />
 		))}
 	    </div>
 

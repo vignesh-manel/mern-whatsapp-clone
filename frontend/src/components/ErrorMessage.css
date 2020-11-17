@@ -1,0 +1,19 @@
+.error_message {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border: 0.8px solid #e07c7c;
+    background-color: #f8d6d6;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transform: scale(0.85);
+}
+
+.error_message > button {
+    background-color: #df4343;
+    width: 23px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+}

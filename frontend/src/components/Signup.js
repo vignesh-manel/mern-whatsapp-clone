@@ -1,29 +1,28 @@
-import React, { useState, useContext } from "react";
-import "./Login.css";
+import React, { useState } from "react";
+import "./Signup.css";
 import axios from '../axios';
-import {UserContext} from "../context/UserContext";
 import ErrorMessage from "./ErrorMessage";
 import { Link } from "react-router-dom";
 
-function Login() {
+function Signup() {
     const [pnum, setPnum] = useState('');
     const [password, setPassword] = useState('');
-    const { userData, setUserData } = useContext(UserContext);
+    const [passwordCheck, setPasswordCheck] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [error, setError] = useState('');
 
-    const login = async (e) => {
+    const signup = async (e) => {
 
 	e.preventDefault();
 	try {
 
-		const resUser = await axios.post('/users/login', {
+		const resUser = await axios.post('/users/register', {
 		    pnum: pnum,
-		    password: password
+		    password: password,
+		    passwordCheck: passwordCheck,
+		    displayName: displayName
 		});
-		setUserData({
-		    token: resUser.data.token,
-		    user: resUser.data.user
-		});
+
 	}
 	catch (err) {
 	    err.response.data.msg && setError(err.response.data.msg)
@@ -32,14 +31,14 @@ function Login() {
     }
 
     return (
-	<div className="login">
-	    <div className="login_container">
+	<div className="signup">
+	    <div className="signup_container">
 		<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/800px-WhatsApp.svg.png" alt=""/>
-		<div className="login_text">
-		    <h1>Sign in to WhatsApp</h1>
+		<div className="signup_text">
+		    <h1>Register to WhatsApp</h1>
 		</div>
 		{error && <ErrorMessage message={error} clearError={() => setError(undefined)} />}
-		<div className="login_form">
+		<div className="signup_form">
 		    <form>
 		        <input
 			    placeholder="Enter your phone number"
@@ -51,11 +50,21 @@ function Login() {
 			    type="password"
 			    onChange={(e) => setPassword(e.target.value)}
 		        />
-		        <button onClick={login}
+		        <input 
+			    placeholder="Re-enter your password"
+			    type="password"
+			    onChange={(e) => setPasswordCheck(e.target.value)}
+		        />
+		        <input 
+			    placeholder="Enter a display name"
+			    type="text"
+			    onChange={(e) => setDisplayName(e.target.value)}
+		        />
+		        <button onClick={signup}
 			    type="submit">
-			    Login
+			    Sign Up
 		        </button>
-			<h6>Not Registered? <Link to="/signup">Sign up</Link></h6>
+			<h6>Already Registered? <Link to="/">Login</Link></h6>
 		   </form>
 		</div>
 	    </div>
@@ -63,4 +72,4 @@ function Login() {
     )
 }
 
-export default Login
+export default Signup
