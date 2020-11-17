@@ -5,9 +5,10 @@
     border-bottom: 1px solid #f6f6f6;
 }
 
-a {
+.linkClass {
     text-decoration: none;
     color: black;
+    outline: none;
 }
 
 .sidebarChat:hover {

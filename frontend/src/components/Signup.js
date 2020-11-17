@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Signup.css";
 import axios from '../axios';
 import ErrorMessage from "./ErrorMessage";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 function Signup() {
     const [pnum, setPnum] = useState('');
@@ -10,6 +10,12 @@ function Signup() {
     const [passwordCheck, setPasswordCheck] = useState('');
     const [displayName, setDisplayName] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const history = useHistory();
+
+    const sleep = (ms) => {
+	return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     const signup = async (e) => {
 
@@ -22,6 +28,9 @@ function Signup() {
 		    passwordCheck: passwordCheck,
 		    displayName: displayName
 		});
+		setSuccess(true);
+		await sleep(2000);
+		history.push("/");
 
 	}
 	catch (err) {
@@ -37,6 +46,13 @@ function Signup() {
 		<div className="signup_text">
 		    <h1>Register to WhatsApp</h1>
 		</div>
+
+		{success && <div className="successMessage">
+		    <span>Successfully Registered</span>
+		</div>
+		}
+
+
 		{error && <ErrorMessage message={error} clearError={() => setError(undefined)} />}
 		<div className="signup_form">
 		    <form>
