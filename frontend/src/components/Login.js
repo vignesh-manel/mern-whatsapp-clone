@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 function Login() {
     const [pnum, setPnum] = useState('');
     const [password, setPassword] = useState('');
-    const { userData, setUserData } = useContext(UserContext);
+    const { setUserData } = useContext(UserContext);
     const [error, setError] = useState('');
 
     const login = async (e) => {

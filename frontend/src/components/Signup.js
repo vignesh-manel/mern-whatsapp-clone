@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Signup.css";
 import axios from '../axios';
 import ErrorMessage from "./ErrorMessage";
@@ -11,22 +11,27 @@ function Signup() {
     const [displayName, setDisplayName] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [seed, setSeed] = useState('');
     const history = useHistory();
 
     const sleep = (ms) => {
 	return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    useEffect(() => {
+	setSeed(Math.floor(Math.random() * 5000));
+    }, []);
+
     const signup = async (e) => {
 
 	e.preventDefault();
 	try {
-
-		const resUser = await axios.post('/users/register', {
+		await axios.post('/users/register', {
 		    pnum: pnum,
 		    password: password,
 		    passwordCheck: passwordCheck,
-		    displayName: displayName
+		    displayName: displayName,
+		    imageUrl: `https://avatars.dicebear.com/api/human/${seed}.svg`
 		});
 		setSuccess(true);
 		await sleep(2000);

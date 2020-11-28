@@ -1,35 +1,37 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import './Sidebar.css';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import ChatIcon from '@material-ui/icons/Chat';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { SearchOutlined } from "@material-ui/icons/";
 import SidebarChat from "./SidebarChat";
-import Pusher from "pusher-js";
 import axios from '../axios';
-
-import { Avatar, IconButton } from "@material-ui/core"
+import { Avatar, IconButton } from "@material-ui/core";
+import {UserContext} from '../context/UserContext';
+import pusher from '../Pusher.js';
 
 function Sidebar() {
 
   const [rooms, setRooms] = useState([]);
-  const [seed, setSeed] = useState('')
+  const [seed, setSeed] = useState('');
+  const { userData } = useContext(UserContext);
     
     useEffect(() => {
 	setSeed(Math.floor(Math.random() * 5000));
     }, []);
 
   useEffect(() => {
-    axios.get('/rooms/sync')
+    axios.get('/rooms/sync', {
+	    params: {
+		pnum: userData.user.pnum
+	    }
+	})
 	.then(response => {
 	  setRooms(response.data)
     })
-  }, []);
+  }, [userData.user.pnum,rooms]);
 
   useEffect(() => {
-    const pusher = new Pusher(process.env.REACT_APP_pusherKey, {
-      cluster: 'ap2'
-    });
 
     const channel = pusher.subscribe('rooms');
     channel.bind('inserted', (newRoom) => {
@@ -43,12 +45,10 @@ function Sidebar() {
 
   }, [rooms]);
 
-   console.log(rooms);
-
     return (
 	<div className="sidebar">
 	    <div className="sidebar_header">
-		<Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`}/>
+		<Avatar src={userData.user.imageUrl}/>
 		<div className="sidebar_headerRight">
 		    <IconButton>
 			<DonutLargeIcon />
@@ -72,7 +72,7 @@ function Sidebar() {
 	    <div className="sidebar_chats">
 		<SidebarChat addNewChat />		
 		{rooms.map(room => (
-		    <SidebarChat key={room._id} id={room._id} name={room.name} />
+		    <SidebarChat key={room._id} id={room._id} name={room.name} imageUrl={room.imageUrl}/>
 		))}
 	    </div>
 

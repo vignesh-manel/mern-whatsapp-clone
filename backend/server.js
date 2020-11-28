@@ -81,7 +81,7 @@ db.once('open', () => {
 app.get('/',(req,res) => res.status(200).send('hello world'))
 
 app.get('/messages/sync', (req, res) => {
-    Messages.find((err, data) => {
+    Messages.find({"$or":[{fromRoomId: req.query.roomId},{toRoomId:req.query.roomId}]},(err, data) => {
 	if (err) {
 	    res.status(500).send(err)
 	} else {
@@ -90,8 +90,38 @@ app.get('/messages/sync', (req, res) => {
     })
 });
 
-app.post('/messages/new', (req, res) => {
-    const dbMessage = req.body;
+app.post('/messages/new', async (req, res) => {
+    const {roomId, message, name, timestamp, roomName, pnum, user, imageUrl} = req.body;
+    var toRoomId;
+
+    const existingRoom = await Messages.findOne({"$or":[{fromRoomId:roomId},{toRoomId:roomId}]})
+ 
+    if(!existingRoom) {
+
+	newRoom = Rooms({
+	    pnum,
+	    name: roomName,
+	    user,
+	    imageUrl
+	});
+
+ 	const savedRoom = await newRoom.save();
+	toRoomId = savedRoom._id
+    }
+    else {
+	if (roomId == existingRoom.fromRoomId)
+	    toRoomId = existingRoom.toRoomId
+	else
+	    toRoomId = existingRoom.fromRoomId
+    }
+
+    dbMessage = {
+	fromRoomId: roomId,
+	toRoomId,
+	message,
+	name,
+	timestamp
+    }
 
     Messages.create(dbMessage, (err, data) => {
 	if (err) {
@@ -103,10 +133,18 @@ app.post('/messages/new', (req, res) => {
 });
 
 
-app.post('/rooms/new', (req, res) => {
-    const dbMessage = req.body;
+app.post('/rooms/new', async (req, res) => {
+    const newRoom= req.body;
 
-    Rooms.create(dbMessage, (err, data) => {
+    const {pnum, displayName, user, imageUrl} = req.body;
+
+    const existingRoom = await Rooms.findOne({pnum: pnum, user: user})
+
+    if (existingRoom) {
+	return res.status(400).json({msg: "Chat already added."})
+    }
+
+    Rooms.create(newRoom, (err, data) => {
 	if (err) {
 	    res.status(500).send(err)
 	} else {
@@ -116,7 +154,7 @@ app.post('/rooms/new', (req, res) => {
 });
 
 app.get('/rooms/sync', (req, res) => {
-    Rooms.find((err, data) => {
+    Rooms.find({user: req.query.pnum},(err, data) => {
 	if (err) {
 	    res.status(500).send(err)
 	} else {
@@ -136,7 +174,7 @@ app.get('/rooms/getRoom', (req, res) => {
 });
 
 app.post('/users/register', async (req, res) => {
-    const {pnum, password, passwordCheck, displayName} = req.body;
+    const {pnum, password, passwordCheck, displayName, imageUrl} = req.body;
 
     if (!pnum || !password || !passwordCheck || !displayName) {
 	return res.status(400).json({msg:"Please enter all the fields"})
@@ -163,7 +201,8 @@ app.post('/users/register', async (req, res) => {
     const newUser = User({
 	pnum,
 	password: passwordHash,
-	displayName
+	displayName,
+	imageUrl
     });
     const savedUser = await newUser.save();
     res.json(savedUser);
@@ -197,9 +236,20 @@ app.post("/users/login", async (req, res) => {
 	user: {
 	    id: user._id,
 	    pnum: user.pnum,
-	    displayName: user.displayName
+	    displayName: user.displayName,
+	    imageUrl: user.imageUrl
 	}
     });
+});
+
+app.get('/users/getUsers', (req, res) => {
+    User.find({pnum: {$ne: req.query.pnum}},(err, data) => {
+	if (err) {
+	    res.status(500).send(err)
+	} else {
+	    res.status(200).send(data)
+	}
+    })
 });
 
 app.listen(port, () => console.log(`listening on localhost:${port}`))
