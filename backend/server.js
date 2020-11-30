@@ -174,7 +174,7 @@ app.get('/rooms/getRoom', (req, res) => {
 });
 
 app.post('/users/register', async (req, res) => {
-    const {pnum, password, passwordCheck, displayName, imageUrl} = req.body;
+    const {pnum, password, passwordCheck, displayName, imageUrl, gender} = req.body;
 
     if (!pnum || !password || !passwordCheck || !displayName) {
 	return res.status(400).json({msg:"Please enter all the fields"})
@@ -188,6 +188,10 @@ app.post('/users/register', async (req, res) => {
 	return res.status(400).json({msg:"Passwords don't match"})
     }
 
+    if (gender === null) {
+	return res.status(400).json({msg:"Please select a gender"})
+    }
+
     const existingUser = await User.findOne({pnum: pnum})
 
     if (existingUser) {
@@ -196,7 +200,6 @@ app.post('/users/register', async (req, res) => {
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
-    console.log(passwordHash);
    
     const newUser = User({
 	pnum,
@@ -210,6 +213,7 @@ app.post('/users/register', async (req, res) => {
 
 app.post("/users/login", async (req, res) => {
     const { pnum, password } = req.body;
+
 
     if (!pnum || !password) {
 	return res.status(400).json({msg:"Please enter all the fields"})

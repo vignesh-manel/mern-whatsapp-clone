@@ -11,11 +11,11 @@ import pusher from '../Pusher.js';
 
 function Chat() {
     const [input, setInput] = useState("");
-    const [seed, setSeed] = useState('');
     const { roomId } = useParams();
     const [room, setRoom] = useState('');
     const { userData } = useContext(UserContext);
     const [messages, setMessages] = useState([]);
+    const [arr, setArr] = useState([]);
 
     useEffect(() => {
 	if (roomId) {
@@ -28,10 +28,6 @@ function Chat() {
 	  setRoom(response.data)
     })
 	}
-    }, [roomId]);
-    
-    useEffect(() => {
-	setSeed(Math.floor(Math.random() * 5000));
     }, [roomId]);
 
     const sendMessage = async (e) => {
@@ -61,6 +57,9 @@ function Chat() {
 	.then(response => {
 	  setMessages(response.data)
     })
+    setArr(messages.filter((message) => {
+	return message.name == room.name
+    }))
 
   }, [roomId,messages]);
 
@@ -81,10 +80,10 @@ function Chat() {
     return (
 	<div className="chat">
 	    <div className="chat_header">
-		<Avatar src={room.imageUrl} />
+		<Avatar src={room?.imageUrl} style={{display:room?"block":"none"}}/>
 		<div className="chat_headerInfo">
 		    <h3>{room.name}</h3>
-		    <p>Last seen at {messages[messages.length-1]?.timestamp}</p>
+		    <p>{arr[arr.length-1]?"Last seen at "+arr[arr.length-1].timestamp:""}</p>
 		</div>
 		<div className="chat_headerRight">
 		    <IconButton>
@@ -101,7 +100,7 @@ function Chat() {
 
 	    <div className="chat_body">
 		{messages.map((message) => (
-		    <p className={`chat_message ${message.name != userData.user.displayName && "chat_receiver"}`}>
+		    <p className={`chat_message ${message.name !== userData.user.displayName && "chat_receiver"}`}>
 		        <span className="chat_name">{message.name}</span>
 		        {message.message}
 		        <span className="chat_timestamp">

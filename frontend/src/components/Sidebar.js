@@ -6,19 +6,24 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { SearchOutlined } from "@material-ui/icons/";
 import SidebarChat from "./SidebarChat";
 import axios from '../axios';
-import { Avatar, IconButton } from "@material-ui/core";
+import { Avatar, IconButton, Menu, MenuItem } from "@material-ui/core";
 import {UserContext} from '../context/UserContext';
 import pusher from '../Pusher.js';
 
 function Sidebar() {
 
   const [rooms, setRooms] = useState([]);
-  const [seed, setSeed] = useState('');
-  const { userData } = useContext(UserContext);
-    
-    useEffect(() => {
-	setSeed(Math.floor(Math.random() * 5000));
-    }, []);
+  const { userData, setUserData } = useContext(UserContext);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const MENU_HEIGHT = 24;
+
+  const logout = () => {
+	setUserData({
+	    token: undefined,
+	    user: undefined
+	});
+  }
 
   useEffect(() => {
     axios.get('/rooms/sync', {
@@ -56,9 +61,24 @@ function Sidebar() {
 		    <IconButton>
 			<ChatIcon />
 		    </IconButton>
-		    <IconButton>
+		    <div>
+		    <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
 			<MoreVertIcon />
 		    </IconButton>
+		    <Menu 
+        		anchorEl={anchorEl}
+        		open={open}
+        		onClose={() => setAnchorEl(null)}
+        		PaperProps={{
+          		    style: {
+            			maxHeight: MENU_HEIGHT * 2.4,
+            			width: '15ch',
+          		    },
+        		}}
+		    >
+			<MenuItem onClick={logout}>Logout</MenuItem>
+		    </Menu>
+		    </div>
 		</div>
 	    </div>
 

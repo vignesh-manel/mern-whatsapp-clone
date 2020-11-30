@@ -18,11 +18,11 @@ function RoomDialog({open, setOpen, createChat, error, setError}) {
 	.then(response => {
 	  setUsers(response.data)
     })
-  }, []);
+  }, [users]);
 
     return (
 	<div>
-	    <Dialog className="dialog" open={open}>
+	    <Dialog className="dialog" open={open} onClose={() => setOpen(false)}>
 		<DialogTitle className="dialogTitle">Choose a Contact</DialogTitle>
 <div className="dialog_content">
 		<DialogContent>

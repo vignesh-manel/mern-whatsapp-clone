@@ -8,15 +8,10 @@ import pusher from '../Pusher.js';
 import RoomDialog from "./RoomDialog";
 
 function SidebarChat({ addNewChat, id, name, imageUrl }) {
-    const [seed, setSeed] = useState('');
     const { userData } = useContext(UserContext);
     const [messages, setMessages] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [error, setError] = useState('');
-    
-    useEffect(() => {
-	setSeed(Math.floor(Math.random() * 5000));
-    }, []);
 
   useEffect(() => {
 
@@ -67,10 +62,12 @@ function SidebarChat({ addNewChat, id, name, imageUrl }) {
 	   </div>
 	</Link>
 ): (
-		<div onClick={() => setOpenDialog(true)} className="sidebarChat">
+	<div>
+		<div  className="sidebarChat" onClick={() => setOpenDialog(true)} >
 		    <h2>Add new Chat</h2>
-		    <RoomDialog open={openDialog} setOpen={setOpenDialog} createChat={(pnum, displayName, imageUrl) => createChat(pnum, displayName, imageUrl)} error={error} setError={setError}/>
 		</div>
+		    <RoomDialog open={openDialog} setOpen={setOpenDialog} createChat={(pnum, displayName, imageUrl) => createChat(pnum, displayName, imageUrl)} error={error} setError={setError}/>
+	</div>
 	    );
 }
 

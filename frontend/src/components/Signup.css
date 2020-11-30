@@ -63,3 +63,9 @@ a {
     border-radius: 8px;
     transform: scale(0.85);
 }
+
+.radio > label {
+    font-size: 15px;
+    padding-right: 10px;
+}
+

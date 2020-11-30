@@ -9,6 +9,7 @@ function Signup() {
     const [password, setPassword] = useState('');
     const [passwordCheck, setPasswordCheck] = useState('');
     const [displayName, setDisplayName] = useState('');
+    const [gender, setGender] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [seed, setSeed] = useState('');
@@ -31,7 +32,8 @@ function Signup() {
 		    password: password,
 		    passwordCheck: passwordCheck,
 		    displayName: displayName,
-		    imageUrl: `https://avatars.dicebear.com/api/human/${seed}.svg`
+		    imageUrl: `https://avatars.dicebear.com/api/${gender}/${seed}.svg`,
+		    gender: gender
 		});
 		setSuccess(true);
 		await sleep(2000);
@@ -81,6 +83,12 @@ function Signup() {
 			    type="text"
 			    onChange={(e) => setDisplayName(e.target.value)}
 		        />
+			<div className="radio" onChange={(e) => setGender(e.target.value)}>
+			<input type="radio" id="male" name="gender" value="male"/>
+			    <label for="male">Male</label>
+			<input type="radio" id="female" name="gender" value="female"/>
+			<label for="female">Female</label>
+			</div>
 		        <button onClick={signup}
 			    type="submit">
 			    Sign Up

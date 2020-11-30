@@ -16,7 +16,7 @@ function App() {
 		      <Router>
 	{!userData.user ? (
 	    <div>
-	    <Route exact path="/"><Login /></Route>
+	    <Route exact path={["/","/login"]}><Login /></Route>
 	    <Route path="/signup"><Signup /></Route>
 	    </div>
 	): (
