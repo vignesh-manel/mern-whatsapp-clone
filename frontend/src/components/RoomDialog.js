@@ -9,6 +9,7 @@ function RoomDialog({open, setOpen, createChat, error, setError}) {
   const [users, setUsers] = useState([]);
   const { userData } = useContext(UserContext);
 
+  //Get list of all users registered, apart from logged in user
   useEffect(() => {
     axios.get('/users/getUsers',{
 	    params: {

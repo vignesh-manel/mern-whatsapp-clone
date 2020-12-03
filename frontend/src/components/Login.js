@@ -11,6 +11,7 @@ function Login() {
     const { setUserData } = useContext(UserContext);
     const [error, setError] = useState('');
 
+    //log in the user and set user data in context
     const login = async (e) => {
 
 	e.preventDefault();

@@ -12,7 +12,8 @@ function SidebarChat({ addNewChat, id, name, imageUrl }) {
     const [messages, setMessages] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [error, setError] = useState('');
-
+ 
+  //Get messages to show the last message for a particular chat and update in realtime using pusher
   useEffect(() => {
 
     axios.get('/messages/sync',{
@@ -36,6 +37,7 @@ function SidebarChat({ addNewChat, id, name, imageUrl }) {
 
   }, [messages,id]);
 
+   //Add new chat room
     const createChat = async (pnum, displayName, imageUrl) => {
 	try {
 	    await axios.post('rooms/new', {

@@ -23,6 +23,7 @@ function Signup() {
 	setSeed(Math.floor(Math.random() * 5000));
     }, []);
 
+    //signup user and redirect to login page
     const signup = async (e) => {
 
 	e.preventDefault();

@@ -9,6 +9,7 @@ import axios from '../axios';
 import { Avatar, IconButton, Menu, MenuItem } from "@material-ui/core";
 import {UserContext} from '../context/UserContext';
 import pusher from '../Pusher.js';
+import { useHistory } from "react-router-dom";
 
 function Sidebar() {
 
@@ -16,15 +17,19 @@ function Sidebar() {
   const { userData, setUserData } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const history = useHistory();
   const MENU_HEIGHT = 24;
 
+  //log out user by removing logged in userdata
   const logout = () => {
 	setUserData({
 	    token: undefined,
 	    user: undefined
 	});
+	history.push('/');
   }
 
+  //Get chatrooms of logged in user
   useEffect(() => {
     axios.get('/rooms/sync', {
 	    params: {
@@ -36,6 +41,7 @@ function Sidebar() {
     })
   }, [userData.user.pnum,rooms]);
 
+  //Refresh the rooms when new room is added using pusher
   useEffect(() => {
 
     const channel = pusher.subscribe('rooms');

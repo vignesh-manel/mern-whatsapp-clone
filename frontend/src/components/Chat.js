@@ -17,6 +17,7 @@ function Chat() {
     const [messages, setMessages] = useState([]);
     const [arr, setArr] = useState([]);
 
+    //Get room details based on roomId when roomId changes
     useEffect(() => {
 	if (roomId) {
 	 axios.get('/rooms/getRoom', {
@@ -30,6 +31,7 @@ function Chat() {
 	}
     }, [roomId]);
 
+    //send new message
     const sendMessage = async (e) => {
 	e.preventDefault();
 	if (roomId) {
@@ -48,6 +50,7 @@ function Chat() {
 	}
     }
 
+  //Get messages based on roomId and get last message from that room user to set last seen
   useEffect(() => {
     axios.get('/messages/sync',{
 	    params: {
@@ -58,11 +61,12 @@ function Chat() {
 	  setMessages(response.data)
     })
     setArr(messages.filter((message) => {
-	return message.name == room.name
+	return message.name === room.name
     }))
 
   }, [roomId,messages]);
 
+  //Refresh the component when new messages are inserted to get real time update using pusher
   useEffect(() => {
 
     const channel = pusher.subscribe('messages');

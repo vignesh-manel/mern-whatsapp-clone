@@ -9,9 +9,11 @@ const Rooms = require('./chatrooms.js')
 require('dotenv').config()
 const User = require('./users.js')
 
+//Initialize express app
 const app = express()
 const port = process.env.PORT || 9000
 
+//Create pusher object
 const pusher = new Pusher({
   appId: process.env.pusherId,
   key: process.env.pusherKey,
@@ -20,9 +22,11 @@ const pusher = new Pusher({
   useTLS: true
 });
 
+//setup middleware
 app.use(express.json());
 app.use(cors());
 
+//setup mongodb connection
 const connection_url = process.env.MONGODB_CON_STR
 
 mongoose.connect(connection_url,{
@@ -33,6 +37,7 @@ mongoose.connect(connection_url,{
 
 const db = mongoose.connection
 
+//Watch for changes in mongodb collections using pusher
 db.once('open', () => {
     console.log('DB is connected');
     const msgCollection = db.collection("messagecontents");
@@ -42,7 +47,6 @@ db.once('open', () => {
     const changeStream2 = roomCollection.watch();
 
     changeStream.on('change', (change) => {
-	console.log(change);
 	
 	if (change.operationType === 'insert') {
 	    const messageDetails = change.fullDocument;
@@ -60,11 +64,9 @@ db.once('open', () => {
     });
 
     changeStream2.on('change', (change) => {
-	console.log(change);
 	
 	if (change.operationType === 'insert') {
 	    const roomDetails = change.fullDocument;
-	    console.log(roomDetails);
 	    pusher.trigger('rooms','inserted',
 		{
 		    name: roomDetails.name,
@@ -80,6 +82,7 @@ db.once('open', () => {
 
 app.get('/',(req,res) => res.status(200).send('hello world'))
 
+//Get messages based on RoomId
 app.get('/messages/sync', (req, res) => {
     Messages.find({"$or":[{fromRoomId: req.query.roomId},{toRoomId:req.query.roomId}]},(err, data) => {
 	if (err) {
@@ -90,6 +93,7 @@ app.get('/messages/sync', (req, res) => {
     })
 });
 
+//insert messages to existing or new Room
 app.post('/messages/new', async (req, res) => {
     const {roomId, message, name, timestamp, roomName, pnum, user, imageUrl} = req.body;
     var toRoomId;
@@ -132,7 +136,7 @@ app.post('/messages/new', async (req, res) => {
     })
 });
 
-
+//Create new room if room doesn't exists
 app.post('/rooms/new', async (req, res) => {
     const newRoom= req.body;
 
@@ -153,6 +157,7 @@ app.post('/rooms/new', async (req, res) => {
     })
 });
 
+//Get all rooms for logged in user
 app.get('/rooms/sync', (req, res) => {
     Rooms.find({user: req.query.pnum},(err, data) => {
 	if (err) {
@@ -163,6 +168,7 @@ app.get('/rooms/sync', (req, res) => {
     })
 });
 
+//Get Room details based on RoomId
 app.get('/rooms/getRoom', (req, res) => {
     Rooms.findById(req.query.roomId,(err, data) => {
 	if (err) {
@@ -173,6 +179,7 @@ app.get('/rooms/getRoom', (req, res) => {
     })
 });
 
+//Register new user
 app.post('/users/register', async (req, res) => {
     const {pnum, password, passwordCheck, displayName, imageUrl, gender} = req.body;
 
@@ -211,6 +218,7 @@ app.post('/users/register', async (req, res) => {
     res.json(savedUser);
 });
 
+//User login
 app.post("/users/login", async (req, res) => {
     const { pnum, password } = req.body;
 
@@ -246,6 +254,7 @@ app.post("/users/login", async (req, res) => {
     });
 });
 
+//Get list of users
 app.get('/users/getUsers', (req, res) => {
     User.find({pnum: {$ne: req.query.pnum}},(err, data) => {
 	if (err) {

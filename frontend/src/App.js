@@ -11,6 +11,7 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 function App() {
   const { userData } = useContext(UserContext);
 
+  //Check if user is logged in or not and render routes accordingly
   return (
     <div className="app">
 		      <Router>
