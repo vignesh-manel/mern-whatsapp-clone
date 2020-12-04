@@ -53,3 +53,8 @@ a {
 .login_form > form > h6 {
     font-weight: 100;
 }
+
+.login_container > h5 {
+    padding-top: 25px;
+    color: red
+}

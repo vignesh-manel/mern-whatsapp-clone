@@ -59,6 +59,7 @@ function Login() {
 			<h6>Not Registered? <Link to="/signup">Sign up</Link></h6>
 		   </form>
 		</div>
+		<h5>This is a dummy application, do not enter any senstive information</h5>
 	    </div>
 	</div>
     )
